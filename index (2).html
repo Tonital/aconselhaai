@@ -1,0 +1,1011 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aconselha Aí - Suporte Emocional com IA</title>
+    <meta name="description" content="Converse com um assistente de IA especializado em suporte emocional. Teste grátis de 5 minutos para refletir sobre seus sentimentos de forma confidencial e segura." />
+    <meta property="og:title" content="Aconselha Aí - Suporte Emocional com IA" />
+    <meta property="og:description" content="Assistente de IA para suporte emocional com teste grátis de 5 minutos" />
+    <meta property="og:type" content="website" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      .gradient-bg {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      }
+      .gradient-bg-alt {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      }
+      .gradient-bg-soft {
+        background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+      }
+      .animate-float {
+        animation: float 6s ease-in-out infinite;
+      }
+      .animate-pulse-soft {
+        animation: pulse-soft 3s ease-in-out infinite;
+      }
+      @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-20px); }
+      }
+      @keyframes pulse-soft {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.7; }
+      }
+      .chat-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+      }
+      .chat-modal.active {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .typing-indicator {
+        display: none;
+        padding: 10px;
+        font-style: italic;
+        color: #666;
+      }
+      .typing-indicator.active {
+        display: block;
+      }
+      
+      /* Gentle Microinteractions */
+      .btn-primary {
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        transform-origin: center;
+      }
+      
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+      }
+      
+      .btn-primary:active {
+        transform: translateY(0px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        transition: all 0.15s ease;
+      }
+      
+      .btn-primary::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        transition: width 0.6s, height 0.6s;
+        transform: translate(-50%, -50%);
+        z-index: 0;
+      }
+      
+      .btn-primary:hover::before {
+        width: 300px;
+        height: 300px;
+      }
+      
+      .btn-primary > * {
+        position: relative;
+        z-index: 1;
+      }
+      
+      .btn-secondary {
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        transform-origin: center;
+      }
+      
+      .btn-secondary:hover {
+        transform: scale(1.05);
+        filter: brightness(1.1);
+      }
+      
+      .btn-secondary:active {
+        transform: scale(0.98);
+        transition: all 0.1s ease;
+      }
+      
+      .card-hover {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      
+      .card-hover:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      }
+      
+      .icon-hover {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      
+      .icon-hover:hover {
+        transform: scale(1.1) rotate(5deg);
+      }
+      
+      .link-hover {
+        position: relative;
+        transition: color 0.3s ease;
+      }
+      
+      .link-hover::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background: currentColor;
+        transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      
+      .link-hover:hover::after {
+        width: 100%;
+      }
+      
+      .faq-item {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      
+      .faq-item:hover {
+        transform: translateX(8px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+      }
+      
+      .exercise-button {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+      }
+      
+      .exercise-button:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+      }
+      
+      .exercise-button:active {
+        transform: translateY(-1px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      }
+      
+      .ripple-effect {
+        position: relative;
+        overflow: hidden;
+      }
+      
+      .ripple {
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.4);
+        transform: scale(0);
+        animation: ripple 0.6s linear;
+        pointer-events: none;
+      }
+      
+      @keyframes ripple {
+        to {
+          transform: scale(4);
+          opacity: 0;
+        }
+      }
+      
+      .input-focus {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      
+      .input-focus:focus {
+        transform: scale(1.02);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+      }
+      
+      .nav-item {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+      }
+      
+      .nav-item:hover {
+        transform: translateY(-1px);
+      }
+      
+      .testimonial-card {
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      
+      .testimonial-card:hover {
+        transform: translateY(-6px) rotate(1deg);
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+      }
+      
+      .logo-bounce:hover {
+        animation: gentle-bounce 0.6s ease-in-out;
+      }
+      
+      @keyframes gentle-bounce {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-5px); }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="bg-slate-50 text-slate-800 min-h-screen">
+      <!-- Header -->
+      <header class="bg-white shadow-sm sticky top-0 z-40 backdrop-blur-md bg-white/90">
+        <nav class="container mx-auto px-4 py-4 flex justify-between items-center">
+          <div class="flex items-center space-x-3 logo-bounce cursor-pointer">
+            <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-teal-400 rounded-xl flex items-center justify-center animate-pulse-soft icon-hover">
+              <span class="text-white text-xl">❤️</span>
+            </div>
+            <span class="text-2xl font-bold text-slate-800">Aconselha Aí</span>
+          </div>
+          <div class="flex items-center space-x-6">
+            <a href="#como-funciona" class="text-slate-600 hover:text-blue-500 hidden md:block nav-item link-hover">Como Funciona</a>
+            <a href="#sobre" class="text-slate-600 hover:text-blue-500 hidden md:block nav-item link-hover">Sobre</a>
+            <button onclick="openChat()" class="btn-primary bg-gradient-to-r from-blue-500 to-purple-600 text-white px-6 py-3 rounded-xl shadow-lg font-semibold ripple-effect">
+              <span>🚀</span>
+              <span>Teste Grátis</span>
+            </button>
+          </div>
+        </nav>
+      </header>
+
+      <!-- Hero Section -->
+      <section class="gradient-bg text-white py-24 px-4 relative overflow-hidden">
+        <div class="absolute inset-0 bg-black/20"></div>
+        <!-- Floating shapes for visual appeal -->
+        <div class="absolute top-20 left-10 w-20 h-20 bg-white/20 rounded-full animate-float"></div>
+        <div class="absolute top-40 right-20 w-32 h-32 bg-yellow-300/30 rounded-full animate-float" style="animation-delay: 2s;"></div>
+        <div class="absolute bottom-20 left-1/4 w-16 h-16 bg-pink-300/40 rounded-full animate-float" style="animation-delay: 4s;"></div>
+        
+        <div class="container mx-auto text-center relative z-10">
+          <div class="max-w-5xl mx-auto">
+            <h1 class="text-5xl md:text-7xl font-bold mb-8 leading-tight">
+              Bem-vindo ao<br>
+              <span class="bg-gradient-to-r from-yellow-300 via-pink-300 to-white bg-clip-text text-transparent animate-pulse-soft">
+                Aconselha Aí
+              </span>
+            </h1>
+            <p class="text-xl md:text-3xl mb-12 text-white/95 leading-relaxed font-light">
+              Converse com um assistente de IA especializado em suporte emocional.<br>
+              <span class="text-yellow-200 font-semibold">Refletir sobre seus sentimentos nunca foi tão simples e acessível.</span>
+            </p>
+            <div class="flex flex-col sm:flex-row gap-6 justify-center items-center mb-16">
+              <button onclick="openChat()" class="btn-primary bg-white text-blue-600 px-10 py-5 rounded-2xl font-bold text-xl shadow-2xl flex items-center space-x-3 ripple-effect">
+                <span>🎯</span>
+                <span>Iniciar Teste Grátis (5min)</span>
+              </button>
+              <div class="flex items-center space-x-3 text-white/90 bg-white/20 px-6 py-3 rounded-xl backdrop-blur-sm btn-secondary">
+                <span class="text-xl icon-hover">🛡️</span>
+                <span class="font-semibold">100% Confidencial & Seguro</span>
+              </div>
+            </div>
+            <div class="flex justify-center items-center space-x-8 text-white/80">
+              <div class="flex items-center space-x-2">
+                <span>⏱️</span>
+                <span>Sem cadastro</span>
+              </div>
+              <div class="flex items-center space-x-2">
+                <span>🔒</span>
+                <span>Privacidade total</span>
+              </div>
+              <div class="flex items-center space-x-2">
+                <span>🌙</span>
+                <span>24h disponível</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- How it works section -->
+      <section id="como-funciona" class="py-24 px-4 bg-white">
+        <div class="container mx-auto">
+          <div class="text-center mb-20">
+            <h2 class="text-4xl md:text-5xl font-bold text-slate-800 mb-6">
+              Como o Aconselha Aí funciona?
+            </h2>
+            <p class="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
+              Uma experiência cuidadosamente projetada para explorar seus sentimentos com o suporte da inteligência artificial
+            </p>
+          </div>
+          
+          <div class="grid md:grid-cols-3 gap-12 max-w-6xl mx-auto">
+            <div class="text-center group hover:transform hover:scale-105 transition-all duration-300">
+              <div class="w-24 h-24 bg-gradient-to-br from-blue-500 to-cyan-400 rounded-3xl flex items-center justify-center mx-auto mb-8 group-hover:shadow-xl transition-shadow">
+                <span class="text-white text-3xl">💭</span>
+              </div>
+              <h3 class="text-2xl font-bold text-slate-800 mb-4">Converse Naturalmente</h3>
+              <p class="text-slate-600 leading-relaxed text-lg">
+                Compartilhe seus sentimentos e pensamentos como faria com um amigo de confiança. Nossa IA está aqui para ouvir sem julgamentos.
+              </p>
+            </div>
+            
+            <div class="text-center group hover:transform hover:scale-105 transition-all duration-300">
+              <div class="w-24 h-24 bg-gradient-to-br from-green-500 to-emerald-400 rounded-3xl flex items-center justify-center mx-auto mb-8 group-hover:shadow-xl transition-shadow">
+                <span class="text-white text-3xl">🤝</span>
+              </div>
+              <h3 class="text-2xl font-bold text-slate-800 mb-4">Receba Apoio Empático</h3>
+              <p class="text-slate-600 leading-relaxed text-lg">
+                Nossa IA especializada oferece perspectivas empáticas, reflexões construtivas e técnicas de autoconhecimento.
+              </p>
+            </div>
+            
+            <div class="text-center group hover:transform hover:scale-105 transition-all duration-300">
+              <div class="w-24 h-24 bg-gradient-to-br from-purple-500 to-pink-400 rounded-3xl flex items-center justify-center mx-auto mb-8 group-hover:shadow-xl transition-shadow">
+                <span class="text-white text-3xl">🌱</span>
+              </div>
+              <h3 class="text-2xl font-bold text-slate-800 mb-4">Cresça e Reflita</h3>
+              <p class="text-slate-600 leading-relaxed text-lg">
+                Desenvolva maior autoconhecimento e ferramentas emocionais através de conversas reflexivas e orientadas.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Benefits Section -->
+      <section class="py-24 px-4 gradient-bg-soft">
+        <div class="container mx-auto">
+          <div class="text-center mb-20">
+            <h2 class="text-4xl md:text-5xl font-bold text-slate-800 mb-6">
+              Por que escolher o Aconselha Aí?
+            </h2>
+          </div>
+          
+          <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
+            <div class="bg-white/80 backdrop-blur-sm p-8 rounded-2xl text-center hover:bg-white transition-all">
+              <div class="text-4xl mb-4">⚡</div>
+              <h3 class="font-bold text-lg mb-2">Acesso Imediato</h3>
+              <p class="text-slate-600">Sem filas, sem agendamentos. Apoio quando você precisar.</p>
+            </div>
+            
+            <div class="bg-white/80 backdrop-blur-sm p-8 rounded-2xl text-center hover:bg-white transition-all">
+              <div class="text-4xl mb-4">🎯</div>
+              <h3 class="font-bold text-lg mb-2">Focado em Você</h3>
+              <p class="text-slate-600">Conversas personalizadas para suas necessidades emocionais.</p>
+            </div>
+            
+            <div class="bg-white/80 backdrop-blur-sm p-8 rounded-2xl text-center hover:bg-white transition-all">
+              <div class="text-4xl mb-4">🌍</div>
+              <h3 class="font-bold text-lg mb-2">Cultura Brasileira</h3>
+              <p class="text-slate-600">IA treinada para entender contextos culturais brasileiros.</p>
+            </div>
+            
+            <div class="bg-white/80 backdrop-blur-sm p-8 rounded-2xl text-center hover:bg-white transition-all">
+              <div class="text-4xl mb-4">💝</div>
+              <h3 class="font-bold text-lg mb-2">Gratuito para Começar</h3>
+              <p class="text-slate-600">Teste de 5 minutos para conhecer nossa abordagem.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Testimonials -->
+      <section id="sobre" class="py-24 px-4 bg-white">
+        <div class="container mx-auto">
+          <div class="text-center mb-20">
+            <h2 class="text-4xl md:text-5xl font-bold text-slate-800 mb-6">
+              Histórias de transformação
+            </h2>
+            <p class="text-xl text-slate-600">
+              Veja como o Aconselha Aí tem ajudado pessoas a encontrar clareza emocional
+            </p>
+          </div>
+          
+          <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+            <div class="bg-gradient-to-br from-blue-50 to-indigo-50 p-8 rounded-3xl shadow-sm hover:shadow-lg transition-shadow">
+              <div class="flex justify-center mb-6">
+                <div class="flex text-yellow-400 text-xl">
+                  <span>⭐</span><span>⭐</span><span>⭐</span><span>⭐</span><span>⭐</span>
+                </div>
+              </div>
+              <p class="text-slate-700 mb-8 text-lg leading-relaxed italic">
+                "Estava passando por ansiedade e não conseguia organizar meus pensamentos. O Aconselha Aí me ajudou a refletir e encontrar paz interior."
+              </p>
+              <div class="flex items-center">
+                <div class="w-12 h-12 bg-gradient-to-br from-blue-400 to-purple-400 rounded-full flex items-center justify-center">
+                  <span class="text-white font-bold">M</span>
+                </div>
+                <div class="ml-4">
+                  <p class="font-bold text-slate-800">Maria S.</p>
+                  <p class="text-slate-600 text-sm">Professora, 34 anos</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="bg-gradient-to-br from-green-50 to-emerald-50 p-8 rounded-3xl shadow-sm hover:shadow-lg transition-shadow">
+              <div class="flex justify-center mb-6">
+                <div class="flex text-yellow-400 text-xl">
+                  <span>⭐</span><span>⭐</span><span>⭐</span><span>⭐</span><span>⭐</span>
+                </div>
+              </div>
+              <p class="text-slate-700 mb-8 text-lg leading-relaxed italic">
+                "Depois de uma separação difícil, precisava conversar com alguém. A IA me ofereceu perspectivas que me ajudaram muito a processar a situação."
+              </p>
+              <div class="flex items-center">
+                <div class="w-12 h-12 bg-gradient-to-br from-green-400 to-teal-400 rounded-full flex items-center justify-center">
+                  <span class="text-white font-bold">J</span>
+                </div>
+                <div class="ml-4">
+                  <p class="font-bold text-slate-800">João P.</p>
+                  <p class="text-slate-600 text-sm">Engenheiro, 41 anos</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="bg-gradient-to-br from-purple-50 to-pink-50 p-8 rounded-3xl shadow-sm hover:shadow-lg transition-shadow">
+              <div class="flex justify-center mb-6">
+                <div class="flex text-yellow-400 text-xl">
+                  <span>⭐</span><span>⭐</span><span>⭐</span><span>⭐</span><span>⭐</span>
+                </div>
+              </div>
+              <p class="text-slate-700 mb-8 text-lg leading-relaxed italic">
+                "Como estudante universitária, sinto muito estresse. O Aconselha Aí me deu ferramentas práticas para lidar com a pressão acadêmica."
+              </p>
+              <div class="flex items-center">
+                <div class="w-12 h-12 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full flex items-center justify-center">
+                  <span class="text-white font-bold">A</span>
+                </div>
+                <div class="ml-4">
+                  <p class="font-bold text-slate-800">Ana L.</p>
+                  <p class="text-slate-600 text-sm">Estudante, 22 anos</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Exercícios de Bem-estar -->
+      <section class="py-24 px-4 bg-gradient-to-br from-indigo-50 to-purple-50">
+        <div class="container mx-auto">
+          <div class="text-center mb-20">
+            <h2 class="text-4xl md:text-5xl font-bold text-slate-800 mb-6">
+              Exercícios de Bem-estar
+            </h2>
+            <p class="text-xl text-slate-600 max-w-3xl mx-auto">
+              Técnicas simples que você pode praticar agora mesmo para melhorar seu estado emocional
+            </p>
+          </div>
+          
+          <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            <div class="bg-white p-8 rounded-3xl shadow-lg hover:shadow-xl transition-shadow border border-blue-100">
+              <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-cyan-400 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <span class="text-white text-2xl">🫁</span>
+              </div>
+              <h3 class="text-xl font-bold text-slate-800 mb-4 text-center">Respiração 4-7-8</h3>
+              <p class="text-slate-600 mb-6 text-center">Técnica poderosa para reduzir ansiedade e encontrar calma</p>
+              <button onclick="startBreathingExercise()" class="w-full bg-gradient-to-r from-blue-500 to-cyan-400 text-white py-3 rounded-xl hover:from-blue-600 hover:to-cyan-500 transition-all font-semibold">
+                Começar Exercício
+              </button>
+            </div>
+            
+            <div class="bg-white p-8 rounded-3xl shadow-lg hover:shadow-xl transition-shadow border border-green-100">
+              <div class="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-400 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <span class="text-white text-2xl">🧘</span>
+              </div>
+              <h3 class="text-xl font-bold text-slate-800 mb-4 text-center">Mindfulness 5 Minutos</h3>
+              <p class="text-slate-600 mb-6 text-center">Conecte-se com o momento presente e reduza o estresse</p>
+              <button onclick="startMindfulness()" class="w-full bg-gradient-to-r from-green-500 to-emerald-400 text-white py-3 rounded-xl hover:from-green-600 hover:to-emerald-500 transition-all font-semibold">
+                Iniciar Prática
+              </button>
+            </div>
+            
+            <div class="bg-white p-8 rounded-3xl shadow-lg hover:shadow-xl transition-shadow border border-purple-100">
+              <div class="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-400 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <span class="text-white text-2xl">❤️</span>
+              </div>
+              <h3 class="text-xl font-bold text-slate-800 mb-4 text-center">Gratidão Diária</h3>
+              <p class="text-slate-600 mb-6 text-center">Cultive uma perspectiva positiva com exercícios de gratidão</p>
+              <button onclick="startGratitude()" class="w-full bg-gradient-to-r from-purple-500 to-pink-400 text-white py-3 rounded-xl hover:from-purple-600 hover:to-pink-500 transition-all font-semibold">
+                Praticar Gratidão
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- FAQ Section -->
+      <section class="py-24 px-4 bg-white">
+        <div class="container mx-auto max-w-4xl">
+          <div class="text-center mb-20">
+            <h2 class="text-4xl md:text-5xl font-bold text-slate-800 mb-6">
+              Perguntas Frequentes
+            </h2>
+            <p class="text-xl text-slate-600">
+              Esclarecemos suas principais dúvidas sobre o Aconselha Aí
+            </p>
+          </div>
+          
+          <div class="space-y-6">
+            <div class="bg-slate-50 rounded-2xl p-6 hover:bg-slate-100 transition-colors cursor-pointer" onclick="toggleFAQ(1)">
+              <div class="flex justify-between items-center">
+                <h3 class="text-lg font-semibold text-slate-800">O Aconselha Aí substitui terapia profissional?</h3>
+                <span class="text-2xl text-slate-600" id="faq-icon-1">+</span>
+              </div>
+              <div class="mt-4 text-slate-600 hidden" id="faq-content-1">
+                Não, o Aconselha Aí é um complemento ao suporte profissional, não um substituto. Oferecemos apoio emocional imediato e ferramentas de reflexão, mas sempre recomendamos buscar ajuda de psicólogos ou psiquiatras quando necessário.
+              </div>
+            </div>
+            
+            <div class="bg-slate-50 rounded-2xl p-6 hover:bg-slate-100 transition-colors cursor-pointer" onclick="toggleFAQ(2)">
+              <div class="flex justify-between items-center">
+                <h3 class="text-lg font-semibold text-slate-800">Minhas conversas são realmente privadas?</h3>
+                <span class="text-2xl text-slate-600" id="faq-icon-2">+</span>
+              </div>
+              <div class="mt-4 text-slate-600 hidden" id="faq-content-2">
+                Sim, absolutamente. Suas conversas não são armazenadas nem compartilhadas. Valorizamos sua privacidade e confidencialidade acima de tudo. Cada sessão é independente e seus dados permanecem seguros.
+              </div>
+            </div>
+            
+            <div class="bg-slate-50 rounded-2xl p-6 hover:bg-slate-100 transition-colors cursor-pointer" onclick="toggleFAQ(3)">
+              <div class="flex justify-between items-center">
+                <h3 class="text-lg font-semibold text-slate-800">Como funciona o teste grátis de 5 minutos?</h3>
+                <span class="text-2xl text-slate-600" id="faq-icon-3">+</span>
+              </div>
+              <div class="mt-4 text-slate-600 hidden" id="faq-content-3">
+                Você pode conversar livremente por 5 minutos sem qualquer cadastro. É uma oportunidade para conhecer nossa abordagem empática e ver se nosso suporte ressoa com você. Após esse período, você pode optar por continuar.
+              </div>
+            </div>
+            
+            <div class="bg-slate-50 rounded-2xl p-6 hover:bg-slate-100 transition-colors cursor-pointer" onclick="toggleFAQ(4)">
+              <div class="flex justify-between items-center">
+                <h3 class="text-lg font-semibold text-slate-800">A IA entende questões culturais brasileiras?</h3>
+                <span class="text-2xl text-slate-600" id="faq-icon-4">+</span>
+              </div>
+              <div class="mt-4 text-slate-600 hidden" id="faq-content-4">
+                Sim! Nosso assistente foi especialmente treinado para compreender contextos culturais, expressões e situações específicas do Brasil. Entendemos as nuances da nossa cultura e como elas afetam nosso bem-estar emocional.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- CTA Section -->
+      <section class="py-24 px-4 gradient-bg-alt text-white">
+        <div class="container mx-auto text-center">
+          <h2 class="text-4xl md:text-5xl font-bold mb-6">
+            Pronto para começar sua jornada?
+          </h2>
+          <p class="text-xl mb-12 max-w-2xl mx-auto opacity-90">
+            Dê o primeiro passo para maior bem-estar emocional. Nosso teste grátis de 5 minutos pode ser o início de uma nova perspectiva.
+          </p>
+          <button onclick="openChat()" class="bg-white text-purple-600 px-12 py-6 rounded-2xl font-bold text-xl hover:bg-gray-50 transition-all transform hover:scale-110 shadow-2xl">
+            🌟 Começar Agora - É Grátis
+          </button>
+        </div>
+      </section>
+
+      <!-- Footer -->
+      <footer class="bg-slate-900 text-white py-20 px-4">
+        <div class="container mx-auto">
+          <div class="text-center mb-12">
+            <div class="flex items-center justify-center space-x-4 mb-8">
+              <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-teal-400 rounded-2xl flex items-center justify-center">
+                <span class="text-white text-2xl">❤️</span>
+              </div>
+              <span class="text-4xl font-bold">Aconselha Aí</span>
+            </div>
+            <p class="text-slate-300 mb-8 max-w-3xl mx-auto text-lg">
+              Suporte emocional inteligente, sempre disponível quando você precisar. 
+              Desenvolvido com cuidado e empatia para seu bem-estar mental.
+            </p>
+          </div>
+          
+          <div class="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto mb-12">
+            <div class="text-center">
+              <h3 class="font-bold text-lg mb-4 text-blue-300">Nossos Valores</h3>
+              <ul class="space-y-2 text-slate-300">
+                <li>💙 Empatia em primeiro lugar</li>
+                <li>🔒 Privacidade absoluta</li>
+                <li>🌱 Crescimento pessoal</li>
+                <li>🤝 Apoio sem julgamentos</li>
+              </ul>
+            </div>
+            
+            <div class="text-center">
+              <h3 class="font-bold text-lg mb-4 text-green-300">Recursos</h3>
+              <ul class="space-y-2 text-slate-300">
+                <li>🎯 Conversas personalizadas</li>
+                <li>⏰ Disponível 24/7</li>
+                <li>🇧🇷 Contexto cultural brasileiro</li>
+                <li>🔄 Melhoria contínua</li>
+              </ul>
+            </div>
+            
+            <div class="text-center">
+              <h3 class="font-bold text-lg mb-4 text-purple-300">Suporte</h3>
+              <ul class="space-y-2 text-slate-300">
+                <li>❓ Dúvidas frequentes</li>
+                <li>📞 Emergências: 188</li>
+                <li>🩺 Busque ajuda profissional</li>
+                <li>📧 Contato e feedback</li>
+              </ul>
+            </div>
+          </div>
+          
+          <div class="border-t border-slate-700 pt-8 text-center">
+            <p class="text-slate-400">
+              © 2024 Aconselha Aí. Desenvolvido com ❤️ para seu bem-estar emocional.<br>
+              <span class="text-sm">Este serviço complementa, mas não substitui, o acompanhamento psicológico profissional.</span>
+            </p>
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <!-- Chat Modal -->
+    <div id="chatModal" class="chat-modal">
+      <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 max-h-[600px] flex flex-col">
+        <!-- Chat Header -->
+        <div class="gradient-bg text-white p-6 rounded-t-2xl">
+          <div class="flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+              <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+                <span>🤖</span>
+              </div>
+              <div>
+                <h3 class="font-bold text-lg">Assistente Emocional</h3>
+                <p class="text-white/80 text-sm">Aqui para te ouvir</p>
+              </div>
+            </div>
+            <button onclick="closeChat()" class="text-white/80 hover:text-white text-2xl">×</button>
+          </div>
+        </div>
+        
+        <!-- Chat Messages -->
+        <div id="chatMessages" class="flex-1 p-6 overflow-y-auto space-y-4">
+          <div class="flex items-start space-x-3">
+            <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+              <span class="text-sm">🤖</span>
+            </div>
+            <div class="bg-blue-50 rounded-2xl rounded-tl-md p-4 max-w-xs">
+              <p class="text-slate-700">
+                Olá! Sou seu assistente de suporte emocional. Estou aqui para te ouvir e conversar sobre como você está se sentindo. O que te trouxe aqui hoje?
+              </p>
+              <span class="text-xs text-slate-400 mt-2 block">Agora mesmo</span>
+            </div>
+          </div>
+          <div id="typingIndicator" class="typing-indicator">
+            <div class="flex items-center space-x-2">
+              <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                <span class="text-sm">🤖</span>
+              </div>
+              <div class="bg-gray-100 rounded-2xl px-4 py-2">
+                <span class="text-gray-500">Digitando...</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Chat Input -->
+        <div class="p-6 border-t">
+          <div class="flex space-x-3">
+            <input 
+              type="text" 
+              id="chatInput" 
+              placeholder="Compartilhe seus sentimentos..."
+              class="flex-1 border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              onkeypress="handleKeyPress(event)"
+            >
+            <button 
+              onclick="sendMessage()" 
+              class="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-6 py-3 rounded-xl hover:from-blue-600 hover:to-purple-700 transition-all transform hover:scale-105"
+            >
+              📤
+            </button>
+          </div>
+          <p class="text-xs text-gray-500 mt-2 text-center">
+            Conversas são privadas e não são armazenadas • ⏱️ Tempo restante: 5:00
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      let sessionId = null;
+      let remainingTime = 300;
+      
+      function openChat() {
+        document.getElementById('chatModal').classList.add('active');
+        document.getElementById('chatInput').focus();
+        
+        if (!sessionId) {
+          startSession();
+        }
+      }
+      
+      function closeChat() {
+        document.getElementById('chatModal').classList.remove('active');
+      }
+      
+      function startSession() {
+        fetch('/api/chat/session', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' }
+        })
+        .then(res => res.json())
+        .then(data => {
+          sessionId = data.sessionId;
+          remainingTime = data.remainingTime;
+          updateTimer();
+        })
+        .catch(err => console.error('Erro ao iniciar sessão:', err));
+      }
+      
+      function sendMessage() {
+        const input = document.getElementById('chatInput');
+        const message = input.value.trim();
+        
+        if (!message || !sessionId) return;
+        
+        // Add user message to chat
+        addMessage(message, 'user');
+        input.value = '';
+        
+        // Show typing indicator
+        document.getElementById('typingIndicator').classList.add('active');
+        
+        // Send to server
+        fetch('/api/chat/message', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ sessionId, content: message })
+        })
+        .then(res => res.json())
+        .then(data => {
+          // Hide typing indicator
+          document.getElementById('typingIndicator').classList.remove('active');
+          
+          // Add AI response
+          addMessage(data.assistantMessage.content, 'assistant');
+          remainingTime = data.remainingTime;
+          updateTimer();
+        })
+        .catch(err => {
+          document.getElementById('typingIndicator').classList.remove('active');
+          addMessage('Desculpe, houve um erro. Tente novamente.', 'assistant');
+          console.error('Erro ao enviar mensagem:', err);
+        });
+      }
+      
+      function addMessage(content, role) {
+        const messagesDiv = document.getElementById('chatMessages');
+        const messageDiv = document.createElement('div');
+        
+        if (role === 'user') {
+          messageDiv.innerHTML = `
+            <div class="flex items-start space-x-3 justify-end">
+              <div class="bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-2xl rounded-tr-md p-4 max-w-xs">
+                <p>${content}</p>
+                <span class="text-xs text-white/70 mt-2 block">Agora mesmo</span>
+              </div>
+              <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                <span class="text-white text-sm">👤</span>
+              </div>
+            </div>
+          `;
+        } else {
+          messageDiv.innerHTML = `
+            <div class="flex items-start space-x-3">
+              <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                <span class="text-sm">🤖</span>
+              </div>
+              <div class="bg-blue-50 rounded-2xl rounded-tl-md p-4 max-w-xs">
+                <p class="text-slate-700">${content}</p>
+                <span class="text-xs text-slate-400 mt-2 block">Agora mesmo</span>
+              </div>
+            </div>
+          `;
+        }
+        
+        messagesDiv.appendChild(messageDiv);
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+      }
+      
+      function handleKeyPress(event) {
+        if (event.key === 'Enter') {
+          sendMessage();
+        }
+      }
+      
+      function updateTimer() {
+        const minutes = Math.floor(remainingTime / 60);
+        const seconds = remainingTime % 60;
+        const timerText = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        
+        const timerElements = document.querySelectorAll('.timer');
+        timerElements.forEach(el => el.textContent = timerText);
+        
+        if (remainingTime > 0) {
+          setTimeout(() => {
+            remainingTime--;
+            updateTimer();
+          }, 1000);
+        }
+      }
+      
+      // Close modal when clicking outside
+      document.getElementById('chatModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+          closeChat();
+        }
+      });
+      
+      // FAQ Toggle functionality
+      function toggleFAQ(index) {
+        const content = document.getElementById(`faq-content-${index}`);
+        const icon = document.getElementById(`faq-icon-${index}`);
+        
+        if (content.classList.contains('hidden')) {
+          content.classList.remove('hidden');
+          icon.textContent = '−';
+        } else {
+          content.classList.add('hidden');
+          icon.textContent = '+';
+        }
+      }
+      
+      // Breathing Exercise
+      function startBreathingExercise() {
+        const modal = document.createElement('div');
+        modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+        modal.innerHTML = `
+          <div class="bg-white rounded-2xl p-8 max-w-md mx-4 text-center">
+            <h3 class="text-2xl font-bold mb-4">Respiração 4-7-8</h3>
+            <div class="mb-6">
+              <div id="breathing-circle" class="w-32 h-32 bg-gradient-to-br from-blue-500 to-cyan-400 rounded-full mx-auto mb-4 flex items-center justify-center text-white text-xl font-bold transition-transform duration-1000">
+                Prepare-se
+              </div>
+              <p id="breathing-instruction" class="text-gray-600">Clique em começar quando estiver pronto</p>
+            </div>
+            <div class="flex space-x-4">
+              <button onclick="closeBreathingModal()" class="flex-1 px-4 py-2 bg-gray-200 text-gray-800 rounded-lg">Fechar</button>
+              <button onclick="startBreathingSequence()" class="flex-1 px-4 py-2 bg-blue-500 text-white rounded-lg">Começar</button>
+            </div>
+          </div>
+        `;
+        document.body.appendChild(modal);
+        window.breathingModal = modal;
+      }
+      
+      function startBreathingSequence() {
+        const circle = document.getElementById('breathing-circle');
+        const instruction = document.getElementById('breathing-instruction');
+        let step = 0;
+        
+        const sequence = [
+          { text: 'Inspire pelo nariz', duration: 4000, scale: 'scale-125' },
+          { text: 'Segure a respiração', duration: 7000, scale: 'scale-125' },
+          { text: 'Expire pela boca', duration: 8000, scale: 'scale-75' },
+          { text: 'Pausa', duration: 2000, scale: 'scale-100' }
+        ];
+        
+        function runStep() {
+          if (step >= sequence.length * 3) { // 3 cycles
+            instruction.textContent = 'Exercício concluído! Como se sente?';
+            circle.textContent = '✓';
+            circle.className = 'w-32 h-32 bg-green-500 rounded-full mx-auto mb-4 flex items-center justify-center text-white text-xl font-bold';
+            return;
+          }
+          
+          const currentStep = sequence[step % sequence.length];
+          instruction.textContent = currentStep.text;
+          circle.className = `w-32 h-32 bg-gradient-to-br from-blue-500 to-cyan-400 rounded-full mx-auto mb-4 flex items-center justify-center text-white text-xl font-bold transition-transform duration-1000 ${currentStep.scale}`;
+          circle.textContent = Math.floor(step / sequence.length) + 1;
+          
+          setTimeout(() => {
+            step++;
+            runStep();
+          }, currentStep.duration);
+        }
+        
+        runStep();
+      }
+      
+      function closeBreathingModal() {
+        document.body.removeChild(window.breathingModal);
+      }
+      
+      // Mindfulness Exercise
+      function startMindfulness() {
+        const modal = document.createElement('div');
+        modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+        modal.innerHTML = `
+          <div class="bg-white rounded-2xl p-8 max-w-md mx-4 text-center">
+            <h3 class="text-2xl font-bold mb-4">Mindfulness 5 Minutos</h3>
+            <div class="mb-6">
+              <div class="w-32 h-32 bg-gradient-to-br from-green-500 to-emerald-400 rounded-full mx-auto mb-4 flex items-center justify-center text-white text-xl font-bold">
+                🧘
+              </div>
+              <p class="text-gray-600 mb-4">Feche os olhos e concentre-se na sua respiração natural. Observe sem julgar.</p>
+              <div id="mindfulness-timer" class="text-3xl font-bold text-green-600">5:00</div>
+            </div>
+            <div class="flex space-x-4">
+              <button onclick="closeMindfulnessModal()" class="flex-1 px-4 py-2 bg-gray-200 text-gray-800 rounded-lg">Fechar</button>
+              <button onclick="startMindfulnessTimer()" class="flex-1 px-4 py-2 bg-green-500 text-white rounded-lg">Iniciar</button>
+            </div>
+          </div>
+        `;
+        document.body.appendChild(modal);
+        window.mindfulnessModal = modal;
+      }
+      
+      function startMindfulnessTimer() {
+        let timeLeft = 300; // 5 minutes
+        const timer = document.getElementById('mindfulness-timer');
+        
+        const interval = setInterval(() => {
+          const minutes = Math.floor(timeLeft / 60);
+          const seconds = timeLeft % 60;
+          timer.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+          
+          if (timeLeft === 0) {
+            clearInterval(interval);
+            timer.textContent = 'Concluído!';
+            timer.className = 'text-3xl font-bold text-green-600';
+          }
+          
+          timeLeft--;
+        }, 1000);
+        
+        window.mindfulnessInterval = interval;
+      }
+      
+      function closeMindfulnessModal() {
+        if (window.mindfulnessInterval) {
+          clearInterval(window.mindfulnessInterval);
+        }
+        document.body.removeChild(window.mindfulnessModal);
+      }
+      
+      // Gratitude Exercise
+      function startGratitude() {
+        const modal = document.createElement('div');
+        modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+        modal.innerHTML = `
+          <div class="bg-white rounded-2xl p-8 max-w-md mx-4">
+            <h3 class="text-2xl font-bold mb-4 text-center">Exercício de Gratidão</h3>
+            <p class="text-gray-600 mb-6 text-center">Liste 3 coisas pelas quais você é grato hoje:</p>
+            <div class="space-y-4 mb-6">
+              <input type="text" placeholder="1. Eu sou grato por..." class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-purple-500">
+              <input type="text" placeholder="2. Eu sou grato por..." class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-purple-500">
+              <input type="text" placeholder="3. Eu sou grato por..." class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-purple-500">
+            </div>
+            <div class="flex space-x-4">
+              <button onclick="closeGratitudeModal()" class="flex-1 px-4 py-2 bg-gray-200 text-gray-800 rounded-lg">Fechar</button>
+              <button onclick="completeGratitude()" class="flex-1 px-4 py-2 bg-purple-500 text-white rounded-lg">Concluir</button>
+            </div>
+          </div>
+        `;
+        document.body.appendChild(modal);
+        window.gratitudeModal = modal;
+      }
+      
+      function completeGratitude() {
+        const inputs = window.gratitudeModal.querySelectorAll('input');
+        const filledInputs = Array.from(inputs).filter(input => input.value.trim() !== '');
+        
+        if (filledInputs.length > 0) {
+          alert(`Obrigado por praticar gratidão! Você listou ${filledInputs.length} itens. A gratidão é uma ferramenta poderosa para o bem-estar mental.`);
+          closeGratitudeModal();
+        } else {
+          alert('Tente preencher pelo menos uma coisa pela qual você é grato.');
+        }
+      }
+      
+      function closeGratitudeModal() {
+        document.body.removeChild(window.gratitudeModal);
+      }
+    </script>
+  </body>
+</html>
